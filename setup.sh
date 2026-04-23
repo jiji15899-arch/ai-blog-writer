@@ -31,13 +31,13 @@ else
 fi
 
 echo ""
-echo "3️⃣  KV Namespace 생성 (Sessions)..."
-KV_OUTPUT=$(wrangler kv:namespace create "SESSIONS" 2>&1)
+echo "3️⃣  KV Namespace 생성 (KV)..."
+KV_OUTPUT=$(wrangler kv:namespace create "KV" 2>&1)
 echo "$KV_OUTPUT"
 KV_ID=$(echo "$KV_OUTPUT" | grep -o 'id = "[^"]*"' | grep -o '"[^"]*"' | tr -d '"')
 if [ -n "$KV_ID" ]; then
     sed -i "s/YOUR_KV_NAMESPACE_ID/$KV_ID/g" wrangler.toml
-    echo "✅ Sessions KV ID: $KV_ID"
+    echo "✅ KV KV ID: $KV_ID"
 fi
 
 echo ""
@@ -47,7 +47,7 @@ echo "$KV_CACHE_OUTPUT"
 KV_CACHE_ID=$(echo "$KV_CACHE_OUTPUT" | grep -o 'id = "[^"]*"' | grep -o '"[^"]*"' | tr -d '"')
 if [ -n "$KV_CACHE_ID" ]; then
     sed -i "s/YOUR_CACHE_KV_ID/$KV_CACHE_ID/g" wrangler.toml
-    echo "✅ Cache KV ID: $KV_CACHE_ID"
+    echo "✅ Cache-KV ID: $KV_CACHE_ID"
 fi
 
 echo ""
