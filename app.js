@@ -49,9 +49,9 @@ function bootApp(user) {
   showPage('dashboard');
 }
 
-function switchAuthTab(tab) {
+function switchAuthTab(tab, btn) {
   document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
+  if (btn) btn.classList.add('active');
   document.getElementById('login-form').style.display = tab === 'login' ? 'block' : 'none';
   document.getElementById('register-form').style.display = tab === 'register' ? 'block' : 'none';
   document.getElementById('auth-msg').style.display = 'none';
@@ -66,8 +66,18 @@ async function doLogin() {
   try {
     const res = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
     const data = await res.json();
-    if (data.user) bootApp(data.user);
-    else showAuthMsg(data.error || '로그인 실패', 'error');
+    if (res.ok && (data.user || data.ok)) {
+      if (data.user) { bootApp(data.user); }
+      else {
+        // user 객체가 없으면 /me로 가져오기
+        const meRes = await fetch('/api/auth/me');
+        const meData = await meRes.json();
+        if (meData.user) bootApp(meData.user);
+        else showAuthMsg(meData.error || '로그인 실패', 'error');
+      }
+    } else {
+      showAuthMsg(data.error || '로그인 실패', 'error');
+    }
   } catch (e) { showAuthMsg('서버 오류가 발생했습니다.', 'error'); }
   btn.disabled = false; btn.textContent = '로그인';
 }
@@ -77,13 +87,25 @@ async function doRegister() {
   const email = document.getElementById('reg-email').value.trim();
   const password = document.getElementById('reg-password').value;
   if (!name || !email || !password) { showAuthMsg('모든 필드를 입력하세요.', 'error'); return; }
+  if (password.length < 6) { showAuthMsg('비밀번호는 6자 이상이어야 합니다.', 'error'); return; }
   const btn = document.getElementById('reg-btn');
   btn.disabled = true; btn.textContent = '처리 중...';
   try {
     const res = await fetch('/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email, password }) });
     const data = await res.json();
-    if (data.ok) bootApp({ name: data.name, email, role: 'user' });
-    else showAuthMsg(data.error || '회원가입 실패', 'error');
+    if (res.ok && data.ok) {
+      // 세션 쿠키가 세팅됐으므로 /me로 완전한 유저 정보 가져오기
+      const meRes = await fetch('/api/auth/me');
+      const meData = await meRes.json();
+      if (meData.user) {
+        bootApp(meData.user);
+      } else {
+        // fallback: 최소 정보로 부팅
+        bootApp({ id: null, name: data.name || name, email, role: 'user' });
+      }
+    } else {
+      showAuthMsg(data.error || '회원가입 실패', 'error');
+    }
   } catch (e) { showAuthMsg('서버 오류', 'error'); }
   btn.disabled = false; btn.textContent = '회원가입';
 }
