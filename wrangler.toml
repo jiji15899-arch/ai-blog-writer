@@ -1,0 +1,20 @@
+name = "aibp-pages"
+compatibility_date = "2024-09-23"
+pages_build_output_dir = "public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "aibp-db"
+database_id = "YOUR_D1_DATABASE_ID"
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "YOUR_KV_NAMESPACE_ID"
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "YOUR_CACHE_KV_ID"
+
+[vars]
+JWT_SECRET = "CHANGE_THIS_TO_RANDOM_SECRET"
+SITE_URL = "https://your-domain.pages.dev"
