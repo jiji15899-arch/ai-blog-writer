@@ -8,8 +8,8 @@ database_name = "aibp-db"
 database_id = "5de8e7bf-cdd7-4065-8cc2-097ba3f61a49"
 
 [[kv_namespaces]]
-binding = "KV"
-id = "33283b0c6440440993d77e9179358262"
+binding = "SESSIONS"
+id = "7486ca3c985b41ee8e2d24589ab2be6d"
 
 [[kv_namespaces]]
 binding = "CACHE-KV"
