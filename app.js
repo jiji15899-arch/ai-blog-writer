@@ -66,15 +66,13 @@ async function doLogin() {
   try {
     const res = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
     const data = await res.json();
-    if (res.ok && (data.user || data.ok)) {
-      if (data.user) { bootApp(data.user); }
-      else {
-        // user 객체가 없으면 /me로 가져오기
-        const meRes = await fetch('/api/auth/me');
-        const meData = await meRes.json();
-        if (meData.user) bootApp(meData.user);
-        else showAuthMsg(meData.error || '로그인 실패', 'error');
-      }
+    if (res.ok && data.user) {
+      bootApp(data.user);
+    } else if (res.ok && data.ok) {
+      const meRes = await fetch('/api/auth/me');
+      const meData = await meRes.json();
+      if (meData.user) bootApp(meData.user);
+      else showAuthMsg('로그인 후 사용자 정보를 불러오지 못했습니다.', 'error');
     } else {
       showAuthMsg(data.error || '로그인 실패', 'error');
     }
@@ -94,15 +92,10 @@ async function doRegister() {
     const res = await fetch('/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email, password }) });
     const data = await res.json();
     if (res.ok && data.ok) {
-      // 세션 쿠키가 세팅됐으므로 /me로 완전한 유저 정보 가져오기
       const meRes = await fetch('/api/auth/me');
       const meData = await meRes.json();
-      if (meData.user) {
-        bootApp(meData.user);
-      } else {
-        // fallback: 최소 정보로 부팅
-        bootApp({ id: null, name: data.name || name, email, role: 'user' });
-      }
+      if (meData.user) bootApp(meData.user);
+      else bootApp({ id: null, name: data.name || name, email, role: 'user' });
     } else {
       showAuthMsg(data.error || '회원가입 실패', 'error');
     }
@@ -138,7 +131,7 @@ function showPage(page) {
   document.getElementById('header-actions').innerHTML = '';
 
   const renderers = {
-    dashboard, affiliate, naver_seo, google_seo, policy, referral, adsense, history, settings, admin
+    dashboard, affiliate, naver_seo, google_seo, policy, referral, adsense, history: postHistory, settings, admin
   };
   if (renderers[page]) renderers[page]();
   closeSidebar();
@@ -576,7 +569,7 @@ async function generateImage(style) {
 }
 
 // ── History Page ───────────────────────
-async function history() {
+async function postHistory() {
   setContent('<div style="text-align:center;padding:40px;color:var(--text2)">📋 기록 로딩 중...</div>');
   try {
     const res = await fetch('/api/posts');
@@ -617,7 +610,7 @@ async function deletePost(id) {
   if (!confirm('삭제하시겠습니까?')) return;
   await fetch(`/api/posts?id=${id}`, { method: 'DELETE' });
   notify('삭제되었습니다.', 'success');
-  history();
+  postHistory();
 }
 
 // ── Settings Page ──────────────────────
@@ -828,6 +821,25 @@ async function saveSystemSettings() {
   const data = await res.json();
   if (data.ok) notify('✅ 시스템 설정 저장됨', 'success');
   else notify(data.error || '저장 실패', 'error');
+}
+
+function showAddUserModal() {
+  const name = prompt('새 사용자 이름:');
+  if (!name) return;
+  const email = prompt('이메일:');
+  if (!email) return;
+  const password = prompt('비밀번호 (6자 이상):');
+  if (!password || password.length < 6) { notify('비밀번호는 6자 이상이어야 합니다.', 'error'); return; }
+  const isAdmin = confirm('관리자 권한 부여?');
+
+  fetch('/api/admin/user', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, password, role: isAdmin ? 'admin' : 'user' })
+  }).then(r => r.json()).then(d => {
+    if (d.ok) { notify('✅ 사용자 추가됨', 'success'); admin(); }
+    else notify(d.error || '추가 실패', 'error');
+  }).catch(() => notify('서버 오류', 'error'));
 }
 
 function editUser(id, name, role, isActive) {
