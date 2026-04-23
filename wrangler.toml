@@ -5,15 +5,15 @@ pages_build_output_dir = "."
 [[d1_databases]]
 binding = "DB"
 database_name = "aibp-db"
-database_id = "YOUR_D1_DATABASE_ID"
+database_id = "5de8e7bf-cdd7-4065-8cc2-097ba3f61a49"
 
 [[kv_namespaces]]
-binding = "SESSIONS"
-id = "YOUR_KV_NAMESPACE_ID"
+binding = "KV"
+id = "33283b0c6440440993d77e9179358262"
 
 [[kv_namespaces]]
-binding = "CACHE"
-id = "YOUR_CACHE_KV_ID"
+binding = "CACHE-KV"
+id = "adf416391d95495296453c2654cb4b0c"
 
 [vars]
 JWT_SECRET = "CHANGE_THIS_TO_RANDOM_SECRET"
