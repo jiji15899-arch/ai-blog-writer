@@ -118,7 +118,6 @@ async function handleRegister(request, env) {
 
 async function handleMe(request, env) {
   try {
-    const { getSession } = await import('../../_utils/auth.js');
     const session = await getSession(request, env);
     if (!session) return jsonResponse({ error: '로그인이 필요합니다.' }, 401);
     
