@@ -140,7 +140,20 @@
   .result-title { font-size: 13px; font-weight: 700; color: var(--accent2); }
   .result-actions { display: flex; gap: 8px; flex-wrap: wrap; }
   .result-body { padding: 20px; max-height: 560px; overflow-y: auto; }
-  .result-text { white-space: pre-wrap; word-break: break-word; font-size: 14px; line-height: 1.8; color: rgba(255,255,255,0.85); }
+  .result-text { word-break: break-word; font-size: 14px; line-height: 1.9; color: rgba(255,255,255,0.88); }
+  .result-text h1 { font-size: 1.6em; font-weight: 700; margin: 1.2em 0 0.6em; color: #fff; }
+  .result-text h2 { font-size: 1.3em; font-weight: 700; margin: 1.1em 0 0.5em; color: var(--accent2); border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+  .result-text h3 { font-size: 1.1em; font-weight: 600; margin: 1em 0 0.4em; color: rgba(255,255,255,0.9); }
+  .result-text p { margin: 0.7em 0; }
+  .result-text ul, .result-text ol { padding-left: 1.5em; margin: 0.6em 0; }
+  .result-text li { margin: 0.3em 0; }
+  .result-text strong { color: #fff; font-weight: 700; }
+  .result-text em { color: var(--accent2); }
+  .result-text table { width: 100%; border-collapse: collapse; margin: 1em 0; font-size: 13px; }
+  .result-text th { background: rgba(124,111,247,0.2); padding: 8px 12px; text-align: left; border: 1px solid var(--border); font-weight: 600; color: var(--accent2); }
+  .result-text td { padding: 7px 12px; border: 1px solid var(--border); }
+  .result-text tr:nth-child(even) { background: rgba(255,255,255,0.03); }
+  .result-text blockquote { border-left: 3px solid var(--accent); padding: 8px 16px; margin: 1em 0; background: rgba(124,111,247,0.08); border-radius: 0 8px 8px 0; color: rgba(255,255,255,0.75); }
   
   /* SCHEMA PANEL */
   .schema-panel { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-top: 16px; }
@@ -510,6 +523,25 @@ function notify(msg, type = 'info') {
   el.textContent = msg; el.className = `notif notif-${type} show`;
   setTimeout(() => el.classList.remove('show'), 3500);
 }
+function copyHtmlAsText(html) {
+  // Copy as plain text (strip HTML) OR as raw HTML - offer both
+  const tmp = document.createElement('div');
+  tmp.innerHTML = sanitizeHtml(html);
+  const plain = tmp.innerText;
+  // Try to copy HTML to clipboard for rich-text paste
+  try {
+    const clipItem = new ClipboardItem({
+      'text/html': new Blob([sanitizeHtml(html)], { type: 'text/html' }),
+      'text/plain': new Blob([plain], { type: 'text/plain' })
+    });
+    navigator.clipboard.write([clipItem]).then(() => notify('📋 HTML 복사 완료!', 'success')).catch(() => {
+      navigator.clipboard.writeText(plain).then(() => notify('📋 텍스트 복사 완료!', 'success'));
+    });
+  } catch {
+    navigator.clipboard.writeText(plain).then(() => notify('📋 텍스트 복사 완료!', 'success'));
+  }
+}
+
 function copyText(text) {
   navigator.clipboard.writeText(text).then(() => notify('클립보드에 복사되었습니다!', 'success'));
 }
@@ -790,6 +822,19 @@ function collectFormData(toolType) {
   }
 }
 
+// ── Sanitize HTML output ──────────────
+function sanitizeHtml(html) {
+  // Remove <html>, <head>, <body> wrapper tags if present
+  let clean = html
+    .replace(/```html?\n?/gi, '')
+    .replace(/```\n?/g, '')
+    .replace(/<\/?html[^>]*>/gi, '')
+    .replace(/<\/?head[^>]*>[\s\S]*?<\/head>/gi, '')
+    .replace(/<\/?body[^>]*>/gi, '')
+    .trim();
+  return clean;
+}
+
 // ── Render Result ──────────────────────
 function renderResult(content, toolType, postId, style) {
   const typeColors = {
@@ -805,13 +850,13 @@ function renderResult(content, toolType, postId, style) {
       <div class="result-header">
         <span class="result-title">✅ 생성 완료</span>
         <div class="result-actions">
-          <button class="btn btn-sm btn-copy" onclick="copyText(lastGeneratedContent)">📋 복사</button>
+          <button class="btn btn-sm btn-copy" onclick="copyHtmlAsText(lastGeneratedContent)">📋 복사</button>
           <button class="btn btn-sm btn-schema" onclick="generateSchemaMarkup()">🏷️ 스키마 자동 생성</button>
           <button class="btn btn-sm btn-img" onclick="generateImage('${style}')">🖼️ 이미지 생성</button>
         </div>
       </div>
       <div class="result-body">
-        <pre class="result-text" id="result-text">${escHtml(content)}</pre>
+        <div class="result-text" id="result-text">${sanitizeHtml(content)}</div>
       </div>
     </div>
     
