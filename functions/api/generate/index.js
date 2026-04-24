@@ -20,7 +20,7 @@ const SYSTEM_PROMPTS = {
 8. 면책 문구: 글 하단에 "이 글은 제휴 마케팅을 포함합니다" 자동 삽입
 9. SEO: 소제목(H2/H3) 3~5개, 리스트 활용, 굵은 글씨로 핵심어 강조
 
-반드시 마크다운 형식으로 출력하고, 실제 블로그에 바로 올릴 수 있는 수준으로 작성하세요.`,
+반드시 HTML 형식으로 출력하고, 마크다운은 절대 사용하지 마세요. h1, h2, h3, p, ul, li, strong, em, table, blockquote 등 HTML 태그를 사용하여 실제 블로그에 바로 올릴 수 있는 수준으로 작성하세요. html, head, body 태그는 포함하지 말고 본문 콘텐츠 태그만 출력하세요.`,
 
   naver_seo: `당신은 네이버 검색 알고리즘 C-Rank와 D.I.A+ 전문가입니다. 네이버 블로그 상위노출과 애드센스(네이버 애드포스트) 수익 극대화에 최적화된 글을 작성합니다.
 
@@ -35,7 +35,7 @@ const SYSTEM_PROMPTS = {
 8. 체류시간 UP: 표, 리스트, Q&A 섹션 포함
 9. 공감/댓글 유도 마무리 문구 포함
 
-반드시 마크다운 형식으로, 네이버 블로그에 바로 활용 가능한 완성형 글을 작성하세요.`,
+반드시 HTML 형식으로 출력하고, 마크다운은 절대 사용하지 마세요. h1, h2, h3, p, ul, li, strong, em, table, blockquote 등 HTML 태그를 사용하여 네이버 블로그에 바로 활용 가능한 완성형 글을 작성하세요. html, head, body 태그는 포함하지 말고 본문 콘텐츠 태그만 출력하세요.`,
 
   google_seo: `당신은 Google E-E-A-T(경험, 전문성, 권위성, 신뢰성) 기반 SEO 전문 콘텐츠 작가입니다. 구글 애드센스 수익과 검색 상위노출을 동시에 달성하는 블로그 글을 작성합니다.
 
@@ -48,7 +48,7 @@ const SYSTEM_PROMPTS = {
 6. FAQ 섹션: 구글 People Also Ask 노린 3~5개 Q&A
 7. 스키마 마크업 제안 (FAQ, How-to 등)
 
-마크다운 형식으로 완성형 글을 작성하세요.`,
+반드시 HTML 형식으로 출력하고, 마크다운은 절대 사용하지 마세요. h1, h2, h3, p, ul, li, strong, em, table, blockquote 등 HTML 태그를 사용하여 완성형 글을 작성하세요. html, head, body 태그는 포함하지 말고 본문 콘텐츠 태그만 출력하세요.`,
 
   policy: `당신은 정부 정책, 지원금, 복지 혜택 전문 블로그 작가입니다. 복잡한 정책 정보를 일반인이 쉽게 이해하고 바로 신청할 수 있도록 안내하는 글을 작성합니다.
 
@@ -61,7 +61,7 @@ const SYSTEM_PROMPTS = {
 6. 분량: 2000~3000자
 7. 면책 고지: "본 글은 정보 제공 목적이며, 정확한 내용은 공식 기관에서 확인하세요"
 
-마크다운 형식으로 작성하세요.`,
+반드시 HTML 형식으로 출력하고, 마크다운은 절대 사용하지 마세요. h1, h2, h3, p, ul, li, strong, em, table, blockquote 등 HTML 태그를 사용하여 작성하세요. html, head, body 태그는 포함하지 말고 본문 콘텐츠 태그만 출력하세요.`,
 
   referral: `당신은 서비스 추천인 코드/링크를 활용한 바이럴 마케팅 블로그 전문가입니다.
 
@@ -73,7 +73,7 @@ const SYSTEM_PROMPTS = {
 5. 추천인 코드 강조: 굵은 글씨 + 별도 박스로 시각화
 6. 분량: 2000~2800자
 
-마크다운으로 작성하고, 추천인 코드 [코드입력] 플레이스홀더를 포함하세요.`,
+반드시 HTML 형식으로 출력하고, 마크다운은 절대 사용하지 마세요. h1, h2, h3, p, ul, li, strong, em, table, blockquote 등 HTML 태그를 사용하여 작성하고, 추천인 코드 [코드입력] 플레이스홀더를 포함하세요. html, head, body 태그는 포함하지 말고 본문 콘텐츠 태그만 출력하세요.`,
 
   adsense: `당신은 구글 애드센스 승인 전문가입니다. 애드센스 심사를 통과하는 독창적이고 경험 기반의 고품질 블로그 글을 작성합니다.
 
@@ -85,7 +85,7 @@ const SYSTEM_PROMPTS = {
 5. 분량: 2500~3500자
 6. 실제 경험처럼 느껴지는 자연스러운 1인칭 서술 필수
 
-완성도 높은 독창적 글을 마크다운으로 작성하세요.`
+반드시 HTML 형식으로 출력하고, 마크다운은 절대 사용하지 마세요. h1, h2, h3, p, ul, li, strong, em, table, blockquote 등 HTML 태그를 사용하여 완성도 높은 독창적 글을 작성하세요. html, head, body 태그는 포함하지 말고 본문 콘텐츠 태그만 출력하세요.`
 };
 
 export async function onRequest(context) {
@@ -118,7 +118,7 @@ export async function onRequest(context) {
 
     // Gemini API 호출
     const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${settings.gemini_api_key}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${settings.gemini_api_key}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -147,7 +147,7 @@ export async function onRequest(context) {
 
     // 생성된 글 저장
     const keyword = prompt_data?.keyword || prompt_data?.topic || prompt_data?.policy_name || prompt_data?.service || '';
-    const wordCount = content.replace(/[#*\[\]`]/g, '').replace(/\s+/g, ' ').trim().length;
+    const wordCount = content.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim().length;
     
     const insertResult = await env.DB.prepare(
       'INSERT INTO generated_posts (user_id, tool_type, keyword, content, word_count) VALUES (?, ?, ?, ?, ?)'
